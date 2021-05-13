@@ -32,6 +32,8 @@ void CalculateOperand(void);
 void CalculateDoubleResult(void);
 void CalculateStringResult(void);
 void Reset(void);
+void ChangeNumDigits(double Operand);
+void RemoveStringDecimal(void);
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine, int nCmdShow)
@@ -385,37 +387,21 @@ void ValueConversion(void)
 	if (FinalCalcFlag) {
 		FinalValueConversion = true;
 		LeftOperand *= -1;
-		if (LeftOperand < 0)
-			++NumDigits;
-		if (LeftOperand > 0)
-			--NumDigits;
+		ChangeNumDigits(LeftOperand);
 		gcvt(LeftOperand, MAX_DIGITS, strValue);
 	} else {
 		if (OperandType == LEFT) {
 			LeftOperand *= -1;
-			if (LeftOperand < 0)
-				++NumDigits;
-			if (LeftOperand > 0)
-				--NumDigits;
+			ChangeNumDigits(LeftOperand);
 			gcvt(LeftOperand, MAX_DIGITS, strValue);
 		} 
 		if (OperandType == RIGHT) {
 			RightOperand *= -1;
-			if (RightOperand < 0)
-				++NumDigits;
-			if (LeftOperand > 0)
-				--NumDigits;
+			ChangeNumDigits(RightOperand);
 			gcvt(RightOperand, MAX_DIGITS, strValue);
 		}		
 	}
-
-	char *PtrStrValue = strValue;
-	while (*PtrStrValue) {
-		PtrStrValue++;
-	}
-	if (*(PtrStrValue-1) == '.') {
-		*(PtrStrValue-1) = '\0';
-	}
+	RemoveStringDecimal();
 }
 
 void InsertOperator(char Value, char *strValue)
@@ -431,13 +417,7 @@ void InsertOperator(char Value, char *strValue)
 		strValue[3] = '\0';
 	} else {
 		gcvt(LeftOperand, MAX_DIGITS, strValue);
-		char *PtrStrValue = strValue;
-		while (*PtrStrValue) {
-			PtrStrValue++;
-		}
-		if (*(PtrStrValue-1) == '.') {
-			*(PtrStrValue-1) = '\0';
-		}
+		RemoveStringDecimal();
 		strValue += sprintf(strValue, "%s %c", strValue, Value);
 	}
 	OperatorFlag = true;
@@ -476,14 +456,7 @@ void CalculateDoubleResult()
 void CalculateStringResult()
 {
 	gcvt(LeftOperand, MAX_DIGITS, strValue);
-	char *PtrStrValue = strValue;
-	while (*PtrStrValue) {
-		PtrStrValue++;
-	}
-	if (*(PtrStrValue-1) == '.') {
-		*(PtrStrValue-1) = '\0';
-	}
-
+	RemoveStringDecimal();
 	FinalCalcFlag = true;
 }
 
@@ -505,4 +478,23 @@ void Reset(void)
 	ContinueCalcFlag = false;
 	FinalCalcFlag = false;
 	FinalValueConversion = false;
+}
+
+void ChangeNumDigits(double Operand)
+{
+	if (Operand < 0)
+		++NumDigits;
+	if (Operand > 0)
+		--NumDigits;
+}
+
+void RemoveStringDecimal(void)
+{
+	char *PtrStrValue = strValue;
+	while (*PtrStrValue) {
+		PtrStrValue++;
+	}
+	if (*(PtrStrValue-1) == '.') {
+		*(PtrStrValue-1) = '\0';
+	}
 }
