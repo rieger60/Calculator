@@ -13,7 +13,8 @@ LRESULT CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 		case WM_INITDIALOG:
 		{
-			SetDlgItemText(hwnd, IDC_RESULT, "0");
+			strcpy(strValue, "0");
+			SetDlgItemText(hwnd, IDC_RESULT, strValue);
 			SetFocus(GetDlgItem(hwnd, IDC_RESULT));
 			SetWindowPos(hwnd, HWND_TOP, 200, 200, 0, 0, SWP_NOSIZE);
 			return 0;
@@ -24,82 +25,50 @@ LRESULT CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			switch (LOWORD(wParam))
 			{
 				case IDC_ZERO:
-					InsertStringNumber('0', strValue);
-					CalculateOperand();
-					SetDlgItemText(hwnd, IDC_RESULT, strValue);
+					PrintStringNumber(hwnd, IDC_ZERO);
 				break;
 				case IDC_ONE:
-					InsertStringNumber('1', strValue);
-					CalculateOperand();
-					SetDlgItemText(hwnd, IDC_RESULT, strValue);
+					PrintStringNumber(hwnd, IDC_ONE);
 				break;
 				case IDC_TWO:
-					InsertStringNumber('2', strValue);
-					CalculateOperand();
-					SetDlgItemText(hwnd, IDC_RESULT, strValue);
+					PrintStringNumber(hwnd, IDC_TWO);
 				break;
 				case IDC_THREE:
-					InsertStringNumber('3', strValue);
-					CalculateOperand();
-					SetDlgItemText(hwnd, IDC_RESULT, strValue);
+					PrintStringNumber(hwnd, IDC_THREE);
 				break;
 				case IDC_FOUR:
-					InsertStringNumber('4', strValue);
-					CalculateOperand();
-					SetDlgItemText(hwnd, IDC_RESULT, strValue);
+					PrintStringNumber(hwnd, IDC_FOUR);
 				break;
 				case IDC_FIVE:
-					InsertStringNumber('5', strValue);
-					CalculateOperand();
-					SetDlgItemText(hwnd, IDC_RESULT, strValue);
+					PrintStringNumber(hwnd, IDC_FIVE);
 				break;
 				case IDC_SIX:
-					InsertStringNumber('6', strValue);
-					CalculateOperand();
-					SetDlgItemText(hwnd, IDC_RESULT, strValue);
+					PrintStringNumber(hwnd, IDC_SIX);
 				break;
 				case IDC_SEVEN:
-					InsertStringNumber('7', strValue);
-					CalculateOperand();
-					SetDlgItemText(hwnd, IDC_RESULT, strValue);
+					PrintStringNumber(hwnd, IDC_SEVEN);
 				break;
 				case IDC_EIGHT:
-					InsertStringNumber('8', strValue);
-					CalculateOperand();
-					SetDlgItemText(hwnd, IDC_RESULT, strValue);
+					PrintStringNumber(hwnd, IDC_EIGHT);
 				break;
 				case IDC_NINE:
-					InsertStringNumber('9', strValue);
-					CalculateOperand();
-					SetDlgItemText(hwnd, IDC_RESULT, strValue);
+					PrintStringNumber(hwnd, IDC_NINE);
 				break;
 				case IDC_ADDITION:
-					if (!FinalCalcFlag)
-						CalculateDoubleResult();
 					OperatorType = ADD;
-					InsertOperator('+', strValue);
-					SetDlgItemText(hwnd, IDC_RESULT, strValue);
+					PrintStringOperator(hwnd, IDC_ADDITION); 
 				break;
 				case IDC_SUBTRACTION:
-					if (!FinalCalcFlag)
-						CalculateDoubleResult();
 					OperatorType = SUB;
-					InsertOperator('-', strValue);
-					SetDlgItemText(hwnd, IDC_RESULT, strValue);
+					PrintStringOperator(hwnd, IDC_SUBTRACTION);
 				break;
 				case IDC_MULTIPLICATION:
-					if (!FinalCalcFlag)
-						CalculateDoubleResult();
 					OperatorType = MUL;
-					InsertOperator('x', strValue);
-					SetDlgItemText(hwnd, IDC_RESULT, strValue);
+					PrintStringOperator(hwnd, IDC_MULTIPLICATION);
 				break;
 				case IDC_DIVISION:
-					if (!FinalCalcFlag)
-						CalculateDoubleResult();
 					OperatorType = DIV;
-					InsertOperator('/', strValue);
-					SetDlgItemText(hwnd, IDC_RESULT, strValue);
+					PrintStringOperator(hwnd, IDC_DIVISION);
 				break;
 				case IDC_NEGATIVE:
 					if (!OperatorFlag)
@@ -223,7 +192,8 @@ void InsertOperator(char Value, char *strValue)
 	} else {
 		gcvt(LeftOperand, MAX_DIGITS, strValue);
 		RemoveStringDecimal();
-		strValue += sprintf(strValue, "%s %c", strValue, Value);
+		strValue += strlen(strValue);
+		sprintf(strValue, " %c", Value);
 	}
 	OperatorFlag = TRUE;
 }
@@ -302,4 +272,23 @@ void RemoveStringDecimal(void)
 	if (*(PtrStrValue-1) == '.') {
 		*(PtrStrValue-1) = '\0';
 	}
+}
+
+void PrintStringNumber(HWND hwnd, int n)
+{
+	if (strValue[0] == '0' && n == IDC_ZERO)
+		;
+	else {
+		InsertStringNumber(n - IDC_ZERO + '0', strValue);
+		CalculateOperand();
+		SetDlgItemText(hwnd, IDC_RESULT, strValue);
+	}
+}
+
+void PrintStringOperator(HWND hwnd, int n)
+{
+	if (!FinalCalcFlag)
+		CalculateDoubleResult();
+	InsertOperator(n - OPERATOR_ASCII + '0', strValue);
+	SetDlgItemText(hwnd, IDC_RESULT, strValue);
 }

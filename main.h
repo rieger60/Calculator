@@ -41,3 +41,5 @@ void CalculateStringResult(void);
 void Reset(void);
 void ChangeNumDigits(double Operand);
 void RemoveStringDecimal(void);
+void PrintStringNumber(HWND hwnd, int n);
+void PrintStringOperator(HWND, int n);
